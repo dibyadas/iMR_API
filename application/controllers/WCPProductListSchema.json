@@ -1,0 +1,26 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "WCP product list schema",
+	"type": "object",
+	"properties": {
+		"productList": {
+			"type": "array",
+			"items": {
+				"title":"product item",
+				"type":"object",
+				"properties":{
+					"product_id":{
+						"type":"string"
+					},
+					"sample_plan_unit":{
+						"type":"number"
+					},
+					"sale_plan_unit":{
+						"type":"number"
+					}
+				}
+			},
+			"minItems":1
+		}
+	}
+}
