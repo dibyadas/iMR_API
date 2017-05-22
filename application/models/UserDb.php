@@ -1,9 +1,11 @@
 <?php
 
-/*
-* Author @rtyrohit
-* 10.3.17
-*/
+/**
+ * @Author: rtyrohit
+ * @Date:   2017-03-09 15:54:32
+ * @Last Modified by:   rtyrohit
+ * @Last Modified time: 2017-03-12 05:15:03
+ */
 
 final class UserDb{
     public static $TABLE = "users";

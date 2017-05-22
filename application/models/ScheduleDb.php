@@ -1,19 +1,20 @@
 <?php
 
-/*
-* Author @rtyrohit
-* 10.3.17
-*/
+/**
+ * @Author: rtyrohit
+ * @Date:   2017-03-09 15:32:24
+ * @Last Modified by:   rtyrohit
+ * @Last Modified time: 2017-04-15 20:29:49
+ */
 
 final class ScheduleDb {
 	public static $TABLE = 'schedule';
 	public static $_ID = 'id';
-	public static $MEET_SETBY = 'meet_setby';
-	public static $MEET_SETWITH = 'meet_setwith';
-	public static $DATE = 'meet_date';
-	public static $STARTTIME = 'starttime';
-	public static $ENDTIME = 'endtime';
+	public static $TOUR_ID = 'tour_id';
+	public static $DATE = 'date';
+	public static $ACCOMPANY_BY = 'accompany_by'
 	public static $STATUS = 'status';
+	public static $RECOMMENDATION = 'recommendation';
 	public static $CREATED_AT = 'created_at';
 	public static $UPDATED_AT = 'updated_at';
 }

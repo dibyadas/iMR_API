@@ -1,17 +1,22 @@
 <?php
 
-/*
-* Author @rtyrohit
-* 10.3.17
-*/
+/**
+ * @Author: rtyrohit
+ * @Date:   2017-03-09 16:15:12
+ * @Last Modified by:   rtyrohit
+ * @Last Modified time: 2017-04-15 21:12:32
+ */
 
 require_once BASEPATH.'core/Model.php';
 require_once "UserDb.php";
+require_once "TourDetailsDb.php";
 require_once "ScheduleDb.php";
 
 class UserModel extends CI_Model
 {
 	protected $query_string, $query;
+  // private $_role_hirerarchy = ["MR", "TM", "AM", "RM", "ZM", "MSD"];
+
 
 	public function __construct(){   
 		parent::__construct();
@@ -71,9 +76,9 @@ class UserModel extends CI_Model
    		$user = $this->fetch_user_details($username);
    		if(count($user)>0)
    		{
-   			$this->query_string = "SELECT * FROM ".ScheduleDb::$TABLE." WHERE ".ScheduleDb::$MEET_SETBY." = ? OR ".ScheduleDb::$MEET_SETWITH." = ?";
+   			$this->query_string = "SELECT * FROM ".ScheduleDb::$TABLE." WHERE ".ScheduleDb::$CREATED_BY." = ?";
    			// return $user[0]['id'];
-   			$this->query = $this->db->query($this->query_string, array($user[0]['id'], $user[0]['id']));
+   			$this->query = $this->db->query($this->query_string, array($user[0]['id']));
 
    			$schedule = $this->query->result_array();
    			
@@ -94,74 +99,57 @@ class UserModel extends CI_Model
    		return $response;
    	}
 
-   	public function set_meeting($meet_setby, $meet_setwith, $meet_date, $starttime, $endtime)
-   	{
-   		try 
-   		{
-   			$members_arr = $this->fetch_user_details($meet_setby, [$meet_setwith]);
-   			
-   			$flag = false; // check for meetsetby existence
-   			$meet_setwith_id = null;
-   			foreach ($members_arr as $member) {
-   				if($meet_setby == $member['username']) {
-   					$meet_setby_id = $member['id'];
-   					$flag = true;
-   				}
-   				elseif($meet_setwith == $member['username'])
-   				{
-   					$meet_setwith_id = $member['id'];
-   				}
-   			}
-
-   			$this->query_string = "INSERT INTO ".ScheduleDb::$TABLE." (".ScheduleDb::$MEET_SETBY ." , ". ScheduleDb::$MEET_SETWITH ." , ". ScheduleDb::$DATE ." , ".ScheduleDb::$STARTTIME. " , " .ScheduleDb::$ENDTIME .") VALUES (?,?,?,?,?)";
-			
-			$this->query = $this->db->query($this->query_string, array($meet_setby_id, $meet_setwith_id, $meet_date, $starttime, $endtime));
-   			
-   			// $meeting = $this->query->result_array();
-   			// return array($meet_setby_id, $meet_setwith_id, $meet_date, $starttime, $endtime);
-   			return $this->query;
-   			// return $meeting;
-   		} 
-   		catch (Exception $e)
-   		{
-   			return $e->getMessage();
-   		}
-   	}
-
-   	public function cancel_meeting($username, $meeting_id)
+   	public function call_meeting($username, $members, $meet_date)
    	{
    		$user = $this->fetch_user_details($username);
-
-   		if(count($user)>0)
-   		{
-   			$this->query_string = "UPDATE ".ScheduleDb::$TABLE." SET ".ScheduleDb::$STATUS."=0 WHERE ".ScheduleDb::$MEET_SETBY."=? AND ".ScheduleDb::$_ID."=?";
-
-   			$this->query = $this->db->query($this->query_string, array($user[0]['id'], $meeting_id));
-
-   			return $this->query;
-   		}
-   		else
-   		{
-   			return false;
-   		}
    	}
 
-   	public function reschedule_meeting($username, $meeting_id, $new_date)
-   	{
-   		$user = $this->fetch_user_details($username);
+   	public function create_plan($username, $complete_plan, $plan_date) 
+    {
+         /*example input ($complete_plan)
+            [
+                "month"=> M(int),
+                "year"=> Y(int),
 
-   		if(count($user)>0)
-   		{
-   			$this->query_string = "UPDATE ".ScheduleDb::$TABLE." SET ".ScheduleDb::$DATE."=? WHERE ".ScheduleDb::$MEET_SETBY."=? AND ".ScheduleDb::$_ID."=?";
+                "plan" => [
+                    [
+                        "date"=> date yyyy-mm-dd,
+                        "plan"=> "text (comma seperated values)",
+                        "recommendation" => "text",
+                        "accompany_by" => "text (comma seperated values)"
+                    ]
+                ]
+            ]
+        */
 
-   			$this->query = $this->db->query($this->query_string, array($new_date,$user[0]['id'], $meeting_id));
+        $this->query_string = "INSERT INTO ".TourDetailsDb::$TABLE." (".TourDetailsDb::$MONTH.", ".TourDetailsDb::$YEAR.", ".TourDetailsDb::$PROGRAMME_STATUS.", ".TourDetailsDb::$USER_DESIGNATION.", ".TourDetailsDb::$DATE_CREATED.", ".TourDetailsDb::$DATE_MODIFIED.", ".TourDetailsDb::$ASSIGNED_TO.", ".TourDetailsDb::$TEAM.", ".TourDetailsDb::$APPROVED_AT.") VALUES (?,?,?,?,?,?,?,?,?)";
+        $this->query = $this->db->query($this->query_string, array($input['month'], $input['year'], $input['plan']['programme_status'], $input['plan']['assigned_user_designation'], $input['plan']['date_created'], $input['plan']['date_modified'], $input['plan']['assigned_to'], $input['plan']['team'], $input['plan']['approved_at']));
 
-   			return $this->query;
-   		}
-   		else
-   		{
-   			return false;
-   		}
-   	}
+        $tour_id = $this->db->insert_id();
+
+        $this->query_string = "INSERT INTO ".ScheduleDb::$TABLE." (".ScheduleDb::$CREATED_BY.", ".ScheduleDb::$PLAN.", ".ScheduleDb::$ACCOMPANY_BY.", ".ScheduleDb::$DATE.", ".ScheduleDb::$RECOMMENDATION.") VALUES ";
+        
+        $total_days = count($complete_plan['plan']);
+        for($i=0;$i<$total_days;$i++) {
+            $plan = $complete_plan['plan'][$i];
+
+            $this->query_string += "(".$tour_id.", '".$plan['plan']."', '".$plan['accompany_by']."', '".$plan['date']."', '".$plan['recommendation']."')";
+
+            if ($i != $total_days-2) {  
+                $this->query_string += ", ";
+            }
+        }
+        $this->query = $this->db->query($this->query_string);
+    
+        return true;
+    }
+
+    public function approve_tour($tour_id) {
+      $datetime = new DateTime('now', new DateTimeZone($timezone));
+      $timestamp = $datetime->format('j-n-Y G:i:s');
+
+      $this->query_string = "UPDATE ".TourDetailsDb::$TABLE." SET ".TourDetailsDb::$APPROVED_AT."=? WHERE ".TourDetailsDb::$_ID."=?";
+      $this->query_string = $this->db->query($this->query_string, array($timestamp, $tour_id))
+    }
 }
 ?>

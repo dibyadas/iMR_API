@@ -1,9 +1,11 @@
 <?php
 
-/*
-* Author @rtyrohit
-* 10.3.17
-*/
+/**
+ * @Author: rtyrohit
+ * @Date:   2017-03-09 16:59:08
+ * @Last Modified by:   rtyrohit
+ * @Last Modified time: 2017-03-28 19:26:16
+ */
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 require(APPPATH.'libraries/REST_Controller.php');
@@ -24,6 +26,7 @@ class User extends REST_Controller
 	private $starttime = "00:00:00";
 	private $endtime = "00:00:00";
 
+	private $_role_hirerarchy = ["MR", "TM", "AM", "RM", "ZM", "MSD"];
 
 	public function __construct()
 	{
@@ -39,15 +42,60 @@ class User extends REST_Controller
 		$this->load->model('UserModel', 'user_');
 	}
 
-	public function rtycheck_get()
-	{
-		$data = ["rty"=>"dsniu"];
-		$this->response($data);
-	}
 
-	private function check_level($user_id, $target_id)
+	public function call_meeting_get()
 	{
+		// $this->username = $this->get('username');
+		// $this->members = $this->get('members'); // array of member usernames
+		// $this->meet_date = $this->get('meet_date');
 
+		$this->username = "rtyrohit";
+		$this->mem_usernames = ["rtyrt", "rohitkr"];
+		$this->meet_date = "1996-07-15";
+
+		$this->_level = "MR";
+
+		// $this->_level = array_search($this->_level, $_role_hirerarchy)
+		// if($this->_level != false) {
+
+		$members = [];
+		if(!empty($username))
+		{
+			foreach ($this->mem_usernames as $mem) 
+			{
+				if(!empty($mem))
+				{
+					if(!in_array($mem, $members))
+					{
+						array_push($members, $mem);
+					}
+				}
+				else
+				{
+					response($this,true,200,"Invalid Input");
+				}
+			}
+
+			if(count($members)>0)
+			{
+				$this->_level = array_search($this->_level, $_role_hirerarchy);
+				if($this->_level != false) {
+					$call_meeting = $this->user_->call_meeting($this->_level, $this->username, $members, $this->meet_date);
+
+					response($this,true,200,$call_meeting);
+				} else {
+					response($this,true,200,"Access Forbidden");
+				}
+			}
+			else
+			{
+				response($this,true,200,"Invalid Input");
+			}
+		}
+		else
+		{
+			response($this,true,200,"Invalid Input");
+		}
 	}
 
 	public function set_meeting_get()
@@ -100,11 +148,8 @@ class User extends REST_Controller
 
 	public function edit_meeting_get()
 	{
-		// $username = $this->get('username');
-		// $meeting_id = $this->get('meeting_id');
-		$username = "rtyrohit"; // LOCAL
-		$meeting_id = 2; // LOCAL
-
+		$username = $this->get('username');
+		$meeting_id = $this->get('meeting_id');
 		$action = $this->get('action');
 
 		if($action == 'cancel')
@@ -115,18 +160,15 @@ class User extends REST_Controller
 		}
 		elseif($action == 'edit') // change date
 		{
-			// $new_date = $this->get('new_date');
-			$new_date = "2017-03-19"; // LOCAL
+			$new_date = $this->get('new_date');
 			$reschedule_meeting = $this->user_->reschedule_meeting($username, $meeting_id, $new_date);
 
 			response($this,true,200,$reschedule_meeting);
 		}
 		else
 		{
-			// nothing to do
+			response($this,true,200,"Invalid Input");
 		}
-
-		response($this,true,200,$result);
 	}
 }
 
