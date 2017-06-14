@@ -149,7 +149,7 @@ class UserModel extends CI_Model
       $timestamp = $datetime->format('j-n-Y G:i:s');
 
       $this->query_string = "UPDATE ".TourDetailsDb::$TABLE." SET ".TourDetailsDb::$APPROVED_AT."=? WHERE ".TourDetailsDb::$_ID."=?";
-      $this->query_string = $this->db->query($this->query_string, array($timestamp, $tour_id))
+      $this->query_string = $this->db->query($this->query_string, array($timestamp, $tour_id));
     }
 }
 ?>

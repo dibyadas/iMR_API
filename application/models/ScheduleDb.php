@@ -12,7 +12,7 @@ final class ScheduleDb {
 	public static $_ID = 'id';
 	public static $TOUR_ID = 'tour_id';
 	public static $DATE = 'date';
-	public static $ACCOMPANY_BY = 'accompany_by'
+	public static $ACCOMPANY_BY = 'accompany_by';
 	public static $STATUS = 'status';
 	public static $RECOMMENDATION = 'recommendation';
 	public static $CREATED_AT = 'created_at';
