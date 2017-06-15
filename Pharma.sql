@@ -609,10 +609,11 @@ INSERT INTO `WCP_wrap` (`wcp_wrap_id`, `month`, `year`, `create_time`, `submit_s
 
 CREATE TABLE IF NOT EXISTS `Tour_Plan` (
   `user_id` varchar(100),
-  `tour_date` text,
+  `tour_month` varchar(3),
   `tour_plan` text,
   `status` text,
-  `level` text 
+  `level` text, 
+  PRIMARY KEY (`user_id`,`tour_month`);
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
