@@ -36,7 +36,7 @@ class Tourplanner extends REST_Controller{
 		$status = $this->post('status');
 		$target_user_id = $this->post('target_user_id');
 		if($this->tp_->update_status($user_id,$status,$target_user_id)){
-			$this->response('Tour Plan Successfully updated');
+			$this->response('Tour Plan status Successfully updated');
 		}
 		else{
 			$this->response('Action Forbidden');
@@ -49,11 +49,16 @@ class Tourplanner extends REST_Controller{
 		$tour_month = $this->post('tour_month');
 		$tour_plan = $this->post('tour_plan');
 		if($this->tp_->change_tour_plan($user_id,$tour_month,$tour_plan,$target_user_id)){
-			$this->response('Status changed');
+			$this->response('Tour Plan Successfully updated');
 		}
 		else{
 			$this->response('Action Forbidden');
 		}
+	}
+
+	public function test_get(){
+		$user_id = $this->get('user_id');
+		$this->response($this->tp_->_get_profile($user_id));
 	}
 
 

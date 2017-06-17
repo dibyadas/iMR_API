@@ -5,7 +5,6 @@ require_once BASEPATH.'core/Model.php';
 class TourPlannerModel extends CI_Model {
 
 	public $query, $query_string;
-	public $heirarchy = ['MR','AM','RM','ZM','MSD'];
 
 	public function __construct(){
 		parent::__construct();
@@ -20,13 +19,21 @@ class TourPlannerModel extends CI_Model {
 		
 	}
 
-	public function _fetch_level($user_id){  
-		$this->query_string = "SELECT `level` FROM `Tour_Plan` WHERE `user_id` = ?";
-		$this->query = $this->db->query($this->query_string,array($user_id));
-		return $this->query->result_array()[0]['level'];
-	}
-	public function check_heirarchy($user_id,$target_user_id){  // returns true if user_id higher that target_user_id else false
-		return array_search($this->_fetch_level($user_id),$this->heirarchy) > array_search($this->_fetch_level($target_user_id), $this->heirarchy);
+	public function _get_profile($user_id){
+		$this->query_string = "SELECT * FROM `Employee_profile` WHERE `user_id` = ?";
+        $this->query = $this->db->query($this->query_string,array($user_id));
+        return $this->query->result_array();
+    }
+
+	public function check_heirarchy($user_id,$target_user_id){  // returns true if user_id is head of target_user_id
+		if($this->_get_profile($target_user_id)[0]['head_id'] == $user_id)
+		{
+			return true;
+
+		}
+		else{
+			return false;
+		}
 	}	
 
 
