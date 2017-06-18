@@ -25,7 +25,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 // $config['base_url'] = 'http://beingmr.esy.es/Pharma';
 // $config['base_url'] = 'http://localhost:8888/'; //  for development --rty
-	$config['base_url'] = 'http://localhost/'
+	$config['base_url'] = 'http://localhost/';
 /*
 |--------------------------------------------------------------------------
 | Index File
