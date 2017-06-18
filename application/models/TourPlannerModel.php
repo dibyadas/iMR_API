@@ -60,15 +60,10 @@ class TourPlannerModel extends CI_Model {
 	}
 
 	public function set_tour_details($user_id,$tour_month,$tour_plan,$status,$level){
-		if(true){//if(20<=getdate()['mday'] && getdate()['mday']<=31){  // if(true){ //
 			$this->query_string = "INSERT INTO `Tour_Plan` (`user_id`,`tour_month`,`tour_plan`,`status`,`level`)
 									VALUES (?,?,?,?,?)";
 			$this->query = $this->db->query($this->query_string,array($user_id,$tour_month,$tour_plan,$status,$level));
 			return true;
-			}
-		else{
-			return false;
-		}
 	}
 
 }
