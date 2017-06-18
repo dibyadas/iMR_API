@@ -27,7 +27,7 @@ class Login extends REST_Controller{
 
 		$profile = $this->login_->getProfile($user_id,$password);
 
-		// response($this,true,200,$profile);
+		response($this,true,200,$profile);
 		// if profile exists return the response with the access token
 		if($profile){
 			$data = $profile;

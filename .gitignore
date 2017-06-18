@@ -1,5 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
-application/config/config.php
-application/config/database.php
+.gitignore
 composer.lock
 vendor/*
+application/config/config.php
+application/config/database.php
