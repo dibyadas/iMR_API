@@ -45,11 +45,6 @@ class Tourplanner extends REST_Controller{
  		}
 	}
 
-	public function update_submission_status_post(){
-		if(!($this->token_payload["own"] == "Admin" || $this->token_payload["user_id"] == $user_id)){
-			$this->response("Action Forbidden");
-		}
-	}
 
 	public function update_status_post(){
 
