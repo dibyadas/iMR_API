@@ -11,9 +11,9 @@ class TourPlannerModel extends CI_Model {
 		$this->load->database();
 	}
 
-	public function get_tour_details($user_id){
-		$this->query_string  = "SELECT * FROM `Tour_Plan` WHERE `user_id` = ?";
-		$this->query = $this->db->query($this->query_string,array($user_id));
+	public function get_tour_details($user_id,$tour_month,$tour_year){
+		$this->query_string  = "SELECT * FROM `Tour_Plan` WHERE `user_id` = ? AND `tour_month` = ? AND `tour_year` = ?";
+		$this->query = $this->db->query($this->query_string,array($user_id,$tour_month,$tour_year));
 		$resp = $this->query->result_array();	
 		return $resp;
 		
@@ -53,15 +53,14 @@ class TourPlannerModel extends CI_Model {
 	}
 
 
-	public function update_status($user_id,$status,$target_user_id){
-			$this->query_string = "UPDATE `Tour_Plan` SET `approval_status` = ? WHERE `user_id` = ?";
-			$this->query = $this->db->query($this->query_string,array($status,$target_user_id));
+	public function update_status($user_id,$tour_month,$tour_year,$status,$target_user_id){
+		$this->query_string = "UPDATE `Tour_Plan` SET `approval_status` = ? WHERE `user_id` = ? AND `tour_month` = ? AND `tour_year` = ?";
+			$this->query = $this->db->query($this->query_string,array($status,$target_user_id,$tour_month,$tour_year));
 			return true;
 	}
 
-	public function fetch_edit_access($user_id){
-		$this->query_string = "SELECT `edit_access` FROM `Tour_Plan` WHERE `user_id` = ?";
-		$this->query = $this->db->query($this->query_string,array($user_id));
+	public function fetch_edit_access($user_id,$tour_month,$tour_year){
+		$this->query_string = "SELECT `edit_access` FROM `Tour_Plan` WHERE `user_id` = ? AND `tour_month` = ? AND `tour_year` = ?";
 		if($this->query->result_array()[0]['edit_access'] == '0'){
 			return false;
 		}
@@ -70,10 +69,10 @@ class TourPlannerModel extends CI_Model {
 		}
 	}
 
-	public function change_edit_access($user_id,$access){
+	public function change_edit_access($user_id,$tour_month,$tour_year,$access){
 		if($access == 1 || $access == 0){
-			$this->query_string = "UPDATE `Tour_Plan` SET `edit_access` = ? WHERE `user_id` = ?";
-			$this->query = $this->db->query($this->query_string,array((string)$access,$user_id));
+			$this->query_string = "UPDATE `Tour_Plan` SET `edit_access` = ? WHERE `user_id` = ? AND `tour_month` = ? AND `tour_year` = ?";
+			$this->query = $this->db->query($this->query_string,array((string)$access,$user_id,$tour_month,$tour_year));
 			return true;
 		}
 		else{
@@ -81,9 +80,9 @@ class TourPlannerModel extends CI_Model {
 		}
 	}
 
-	public function change_tour_plan($user_id,$tour_month,$tour_plan,$target_user_id,$flag=1){
-			$this->query_string = "UPDATE `Tour_Plan` SET `tour_plan` = ? WHERE `user_id` = ? AND `tour_month` = ?";
-			$this->query  = $this->db->query($this->query_string,array($tour_plan,$target_user_id,$tour_month));
+	public function change_tour_plan($user_id,$tour_month,$tour_year,$tour_plan,$target_user_id){
+			$this->query_string = "UPDATE `Tour_Plan` SET `tour_plan` = ? WHERE `user_id` = ? AND `tour_month` = ? AND `tour_year` = ?";
+			$this->query  = $this->db->query($this->query_string,array($tour_plan,$target_user_id,$tour_month,$tour_year));
 			return true;
 	}
 

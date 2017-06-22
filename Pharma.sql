@@ -610,6 +610,7 @@ INSERT INTO `WCP_wrap` (`wcp_wrap_id`, `month`, `year`, `create_time`, `submit_s
 CREATE TABLE IF NOT EXISTS `Tour_Plan` (
   `user_id` varchar(100),
   `tour_month` varchar(3),
+  `tour_year` INT(4) NOT NULL,
   `tour_plan` text,
   `approval_status` text,
   `level` text, 
