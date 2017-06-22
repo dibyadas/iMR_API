@@ -25,22 +25,55 @@ class TourPlannerModel extends CI_Model {
         return $this->query->result_array();
     }
 
-	public function check_heirarchy($user_id,$target_user_id){  // returns true if user_id is head of target_user_id
-		if($this->_get_profile($target_user_id)[0]['head_id'] == $user_id)
+	public function check_hierarchy($user_id,$target_user_id){  // returns true if user_id is head of target_user_id
+
+		if((string)array_search($user_id,$this->get_hierarchy($target_user_id)) != (string)false)
 		{
 			return true;
-
 		}
 		else{
 			return false;
 		}
-	}	
+	}
+
+	public function get_hierarchy($user_id,$hierarchy = null){  // this func returns the array containing ids of the heads
+		if($hierarchy == null){
+			$hierarchy = array();
+		}
+		$temp = $this->_get_profile($user_id)[0]['head_id'];
+		if($temp == "DUMMY")
+		{
+			return $hierarchy;
+		}
+		else{
+			array_push($hierarchy,$temp);
+			return $this->get_hierarchy($temp,$hierarchy);
+		}
+
+	}
 
 
 	public function update_status($user_id,$status,$target_user_id){
-		if($this->check_heirarchy($user_id,$target_user_id)){
-			$this->query_string = "UPDATE `Tour_Plan` SET `status` = ? WHERE `user_id` = ?";
+			$this->query_string = "UPDATE `Tour_Plan` SET `approval_status` = ? WHERE `user_id` = ?";
 			$this->query = $this->db->query($this->query_string,array($status,$target_user_id));
+			return true;
+	}
+
+	public function fetch_edit_access($user_id){
+		$this->query_string = "SELECT `edit_access` FROM `Tour_Plan` WHERE `user_id` = ?";
+		$this->query = $this->db->query($this->query_string,array($user_id));
+		if($this->query->result_array()[0]['edit_access'] == '0'){
+			return false;
+		}
+		elseif($this->query->result_array()[0]['edit_access'] == '1'){
+			return true;
+		}
+	}
+
+	public function change_edit_access($user_id,$access){
+		if($access == 1 || $access == 0){
+			$this->query_string = "UPDATE `Tour_Plan` SET `edit_access` = ? WHERE `user_id` = ?";
+			$this->query = $this->db->query($this->query_string,array((string)$access,$user_id));
 			return true;
 		}
 		else{
@@ -48,19 +81,14 @@ class TourPlannerModel extends CI_Model {
 		}
 	}
 
-	public function change_tour_plan($user_id,$tour_month,$tour_plan,$target_user_id){
-		if($this->check_heirarchy($user_id,$target_user_id)){
+	public function change_tour_plan($user_id,$tour_month,$tour_plan,$target_user_id,$flag=1){
 			$this->query_string = "UPDATE `Tour_Plan` SET `tour_plan` = ? WHERE `user_id` = ? AND `tour_month` = ?";
 			$this->query  = $this->db->query($this->query_string,array($tour_plan,$target_user_id,$tour_month));
 			return true;
-		}
-		else{
-			return false;
-		}
 	}
 
 	public function set_tour_details($user_id,$tour_month,$tour_plan,$status,$level){
-			$this->query_string = "INSERT INTO `Tour_Plan` (`user_id`,`tour_month`,`tour_plan`,`status`,`level`)
+			$this->query_string = "INSERT INTO `Tour_Plan` (`user_id`,`tour_month`,`tour_plan`,`approval_status`,`level`)
 									VALUES (?,?,?,?,?)";
 			$this->query = $this->db->query($this->query_string,array($user_id,$tour_month,$tour_plan,$status,$level));
 			return true;

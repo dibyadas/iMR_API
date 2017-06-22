@@ -25,19 +25,19 @@ class Employee extends REST_Controller{
 		$this->load->model('EmployeeModel',"Employee_");
 		$this->load->model('PersonHistoryModel',"PH_");
 		$this->load->model('HeadHistoryModel',"HH_");
-		try{
+// 		try{
 
-			// Authenticate User with the token
-			$this->token_payload = authenticate($this);
+// 			// Authenticate User with the token
+// 			$this->token_payload = authenticate($this);
 
-			// Admin Rersources can only be accessed by Admin. So check for token own here itself.
-//            if($this->token_payload['own'] != "Admin"){
-//                response($this,false,430,"","You are not allowed for this action");
-//            }
-		}
-		catch(Exception $e){
-			response($this,false,401,"",$e->getMessage());		// 401 -> invalid token
-		}
+// 			// Admin Rersources can only be accessed by Admin. So check for token own here itself.
+// //            if($this->token_payload['own'] != "Admin"){
+// //                response($this,false,430,"","You are not allowed for this action");
+// //            }
+// 		}
+// 		catch(Exception $e){
+// 			response($this,false,401,"",$e->getMessage());		// 401 -> invalid token
+// 		}
 
 	}
 
@@ -313,12 +313,14 @@ class Employee extends REST_Controller{
 
 	public function myHierarchy_get(){
 		// TODO:: 	Add accessible hierarchy code here.
-		$userId = $this->token_payload["user_id"];
+		//$userId = $this->token_payload["user_id"];
+		$userId = $this->get('user_id');
 		response($this,true,200,$this->getAllAccessibleProfiles($userId));
 	}
 
 	public function myHeadHierarchy_get(){
-		$userId = $this->token_payload["user_id"];
+		///$userId = $this->token_payload["user_id"];
+		$userId = $this->get('user_id');
 		response($this,true,200,$this->Employee_->getHeadHierarchy($userId));
 	}
 
