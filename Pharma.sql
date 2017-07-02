@@ -613,10 +613,12 @@ CREATE TABLE IF NOT EXISTS `Tour_Plan` (
   `tour_year` INT(4) NOT NULL,
   `tour_plan` text,
   `approval_status` text,
-  `level` text, 
-  PRIMARY KEY (`user_id`,`tour_month`);
-  ALTER TABLE `Tour_Plan` ADD `edit_access` SET('0','1') NOT NULL DEFAULT '0' AFTER `status`;
+  `edit_access` SET('0','1') NOT NULL DEFAULT '0'
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `Tour_Plan` 
+  ADD PRIMARY KEY (`user_id`,`tour_month`,`tour_year`);
+
 
 
 --
