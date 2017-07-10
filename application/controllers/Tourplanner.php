@@ -83,7 +83,7 @@ class Tourplanner extends REST_Controller{
 			$access = $this->post('access');
 
 			if($this->tp_->change_edit_access($user_id,$tour_month,$tour_year,$access)){
-				response($this,true,200,"Tour Plan successfully added");
+				response($this,true,200,"Edit access to the tour plan successfully changed");
 			}else{
 				response($this,false,401,"","Action Forbidden");
 			}
@@ -98,84 +98,49 @@ class Tourplanner extends REST_Controller{
 		$tour_month = $this->post('tour_month');
 		$tour_year = $this->post('tour_year');
 		$tour_plan = $this->post('tour_plan');
-		$tour_month_year = $tour_year."-".$tour_month;
+
+		$target_month = DateTime::createFromFormat('F', DateTime::createFromFormat('!m', ((int)$tour_month)+1)->format('F'));
+		$target_year = DateTime::createFromFormat('Y', $tour_year);
+
+		$start_date_for_target_tp = new DateTime(date('m/d/Y H:i:s', strtotime(date(($target_month->format('m')-1).'/09/'.$target_year->format('Y').' 00:00:00'))));
+
+		$end_date_for_target_tp = new DateTime(date('m/d/Y H:i:s', strtotime(date(($target_month->format('m')).'/1/'.$target_year->format('Y').' 00:00:00'))));
+
+		$todayDate = new DateTime(date('m/d/Y H:i:s'));
+
+		$is_within_deadline = $todayDate>$start_date_for_target_tp && $todayDate<$end_date_for_target_tp;
+
+		$condition_check = $is_within_deadline || $this->tp_->fetch_edit_access($user_id,$tour_month,$tour_year);
 	
 		if(!($this->token_payload["own"] == "Admin" || $this->token_payload["user_id"] == $user_id)){
-			$this->response("Action Forbidden");
+			response($this,false,401,'Action Forbidden1');
 		}
-		elseif($user_id == $target_user_id) { // if user trying to change his own tour plan
-			if(20<=getdate()['mday'] && getdate()['mday']<=31){
-				if(date('Y-m') < $tour_month_year){
+		elseif ($condition_check) {
+			if($user_id == $target_user_id) {  // if user trying to change his own tour plan
 					if($this->tp_->change_tour_plan($tour_month,$tour_year,$tour_plan,$target_user_id)){
-							$this->response('Tour Plan Successfully updated');
+							response($this,true,200,'Tour Plan Successfully updated');
 						}
 						else{
-							$this->response('Action Forbidden');
+							response($this,false,401,'','Action Forbidden');
 					}
-				}else{
-					$this->response('Action Forbidden');
 				}
-			}
-			elseif($this->tp_->fetch_edit_access($user_id,$tour_month,$tour_year)){
-				if(date('Y-m') == $tour_month_year){
+			elseif($user_id != $target_user_id){  // if his head his trying to change the tour plan
+				if($this->tp_->check_hierarchy($user_id,$target_user_id)){   // check the heirarchy if he is the head
 					if($this->tp_->change_tour_plan($tour_month,$tour_year,$tour_plan,$target_user_id)){
-									$this->response('Tour Plan Successfully updated');
-								}
-								else{
-									$this->response('Action Forbidden');
-							}
-				}
-			}
-			else{
-			 	$this->response('Action Forbidden');
-			}
-		}
-		elseif($user_id != $target_user_id){  // if his head his trying to change the tour plan
-			if(20<=getdate()['mday'] && getdate()['mday']<=31){
-				if(date('Y-m') < $tour_month_year){
-						if($this->tp_->check_hierarchy($user_id,$target_user_id)){
-							if($this->tp_->change_tour_plan($tour_month,$tour_year,$tour_plan,$target_user_id)){
-									$this->response('Tour Plan Successfully updated');
-								}
-								else{
-									$this->response('Action Forbidden');
-							}
+							response($this,true,200,'Tour Plan Successfully updated');
 						}
 						else{
-							$this->response('Action Forbidden');
-						}
-				}else{
-					$this->response('Action Forbidden');
+							response($this,false,401,'','Action Forbidden');
+					}
 				}
-			}
-			elseif($this->tp_->fetch_edit_access($user_id,$tour_month,$tour_year)){
-				if(date('Y-m') == $tour_month_year){
-					if($this->tp_->check_hierarchy($user_id,$target_user_id)){
-							if($this->tp_->change_tour_plan($tour_month,$tour_year,$tour_plan,$target_user_id)){
-								$this->response('Tour Plan Successfully updated');
-							}
-							else{
-								$this->response('Action Forbidden');
-							}
-						}
-						else{
-							$this->response('Action Forbidden');
-						}
-					}else{
-					 	$this->response('Action Forbidden');
-					}
-				}else{
-						$this->response('Action Forbidden');
-					}
-			}else{
-				$this->response('Action Forbidden');
-			}
+				else{
+					response($this,false,401,'','Action Forbidden');
+				}
+			}	
+		}else{
+			response($this,false,401,'','Action Forbidden');
+		}		
 	}
-
-	// public function test_get(){
-	// 	$user_id = $this->get('user_id');
-	// 	$this->response($this->tp_->check_heirarchy($user_id,"MR1_INDORE"));
-	// }
 
 }
 
