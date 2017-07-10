@@ -1,5 +1,6 @@
 <?php
 require_once "Constants.php";
+require_once(APPPATH."/libraries/jwt_helper.php");
 // Context is the class object which extends to REST_CONTROLLER.
 // This object should also have loaded this models already : PersonModel and UserIdModel
 function authenticate($context){
