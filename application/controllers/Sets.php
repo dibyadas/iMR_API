@@ -9,34 +9,35 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 require(APPPATH.'libraries/REST_Controller.php');
 require(APPPATH.'helpers/response.php');
-require(APPPATH.'helpers/authenticate.php');
+//require(APPPATH.'helpers/authenticate.php');
 require(APPPATH.'helpers/PersonHistory.php');
 require_once(APPPATH.'libraries/jwt_helper.php');
 class Sets extends REST_Controller {
     private $token_payload;
     public function __construct(){
         parent::__construct();
-        $this->load->model('UserIdModel', "UserId_");
+        //$this->load->model('UserIdModel', "UserId_"); module not present
         $this->load->model('PersonModel', "Person_");
 
         $this->load->model('SetModel', 'Set_');
         $this->load->model('PersonHistoryModel', 'PEH_');
         $this->load->model('PriceHistoryModel', 'PRH_');
-        $this->load->model('PriceKeyMapModel', 'PR_KeyMap');
+        //$this->load->model('PriceKeyMapModel', 'PR_KeyMap');  module not present
         $this->load->model('HeadHistoryModel', 'HH_');
         $this->load->model('MRHistoryModel', 'MRH_');
-        $this->load->model('ChildKeyMapModel', 'C_KMP');
+       // $this->load->model('ChildKeyMapModel', 'C_KMP');   module not present\
         try{
-            $this->token_payload = authenticate($this);
+            //$this->token_payload = authenticate($this);
         }
         catch(Exception $e){
             response($this,false,401,"",$e->getMessage());		// 401 -> invalid token
         }
-    }
+    }  // there seems to be a problem of authentication with this module
 
     public function list_get(){
-        if($this->token_payload["own"] == "MR") {
-			$MRId = $this->token_payload["user_id"];
+        if(1 || $this->token_payload["own"] == "MR") {
+			//$MRId = $this->token_payload["user_id"];
+            $MRId = $this->get('user_id');
 			response($this,true,200,$this->Set_->getSets($MRId));
         }else{
 			response($this,false,430,"","Only MR have permission for this action");

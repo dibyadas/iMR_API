@@ -45,7 +45,7 @@ class AM extends Employee {
 			response($this,false,430,"Database Error : AM edit");
 		}
 	}
-	public function activeProfiles_get(){
+	public function activeProfiles_get(){  
 		$role = "AM";
 		response($this,true,200,$this->getActiveProfiles($role));
 	}
@@ -58,8 +58,8 @@ class AM extends Employee {
 	public function profile_get(){
 		$AMId = $this->get(EmployeeDb::$USER_ID);
 		$role = "AM";
-		$profile = $this->getProfile($AMId,$role);
-		response($this,true,200,$profile);
+		$profile = $this->getProfile($AMId,$role); // error here.. 
+		response($this,true,200,$profile); 
 	}
 
 	public function activate_post(){

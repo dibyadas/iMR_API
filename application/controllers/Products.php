@@ -4,7 +4,7 @@ require(APPPATH.'libraries/REST_Controller.php');
 require(APPPATH.'helpers/response.php');
 require(APPPATH.'helpers/authenticate.php');
 require_once(APPPATH.'libraries/jwt_helper.php');
-require_once (APPPATH.'helpers/priceHistory.php');
+//require_once (APPPATH.'helpers/priceHistory.php');
 class Products extends REST_Controller{
 	private $token_payload;
 	public function __construct(){   

@@ -9,7 +9,7 @@ require(APPPATH.'helpers/createLink.php');
 require(APPPATH.'helpers/validateDateFormat.php');
 require_once(APPPATH.'libraries/jwt_helper.php');
 require_once(APPPATH.'models/ChemistProfileDb.php');
-require_once(APPPATH.'models/TBDChemDb.php');
+//require_once(APPPATH.'models/TBDChemDb.php');
 
 class Chemist extends REST_Controller{
 	private $token_payload;

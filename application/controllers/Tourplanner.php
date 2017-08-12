@@ -26,6 +26,7 @@ class Tourplanner extends REST_Controller{
 		$tour_year = $this->get('tour_year');
 
 		response($this,true,200,$this->tp_->get_tour_details($user_id,$tour_month,$tour_year));
+		//$this->response($this->tp_->get_tour_details($user_id,$tour_month,$tour_year)[0]['tour_plan']);
 	}
 
 	public function set_tour_details_post(){
